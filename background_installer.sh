@@ -96,7 +96,6 @@ function install_py_deps {
     else
         "$VENV_DIR/bin/python3" -m pip install flask==2.3.3 werkzeug==2.3.7 flask-login==0.6.2 pyserial pymodbus==2.5.3
     fi
-    python3 -m pip install pymodbus==2.5.3
 }
 
 function swap_on {
@@ -104,11 +103,15 @@ function swap_on {
 
     # Fallocate is instantaneous. Only use dd as fallback.
     $1 touch "$SWAP_FILE"
-    $1 fallocate -zl 1G "$SWAP_FILE" ||
-    $1 dd if=/dev/zero of="$SWAP_FILE" bs=1M count=1000
+    if [ -z "$WSL_DISTRO_NAME" ]; then
+        $1 fallocate -zl 1G "$SWAP_FILE" || \
+        $1 dd if=/dev/zero of="$SWAP_FILE" bs=1M count=1000
 
-    $1 mkswap "$SWAP_FILE"
-    $1 swapon "$SWAP_FILE"
+        $1 chmod 0600 "$SWAP_FILE"
+        $1 mkswap "$SWAP_FILE"
+        $1 swapon "$SWAP_FILE"
+    fi
+
 }
 
 function swap_off {
@@ -258,8 +261,16 @@ if [ -d "/docker_persistent" ]; then
     cp -n /dev/null /docker_persistent/persistent.file
     cp -n /dev/null /docker_persistent/mbconfig.cfg
 fi
-cd "$OPENPLC_DIR/webserver"
-"$OPENPLC_DIR/.venv/bin/python3" webserver.py
+
+# Get the directory where the script is located
+SCRIPT_DIR=\$( cd -- "\$( dirname -- "\${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+cd "\$SCRIPT_DIR/webserver"
+if [ -f "\$SCRIPT_DIR/.venv/bin/python" ]; then
+    "\$SCRIPT_DIR/.venv/bin/python" webserver.py
+else
+    "\$SCRIPT_DIR/.venv/bin/python3" webserver.py
+fi
 EOF
     chmod a+x "$OPENPLC_DIR/start_openplc.sh"
     cd "$OPENPLC_DIR"

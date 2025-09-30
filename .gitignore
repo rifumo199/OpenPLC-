@@ -1,24 +1,18 @@
-# where docs are output to on gitlab.. MUST be named public/
-public/
-
-.sass-cache/
-.idea/
-
+# Python
+.venv/
+__pycache__/
 *.pyc
-webserver/core/hardware_layer.cpp
-webserver/core/glueVars.cpp
 
-# IDE files for Visual Studio Code and Visual Studio
-CMakeSettings.json
-*.vscode/
-*.vs/
+# Build and install artifacts
+install_log.txt
+start_openplc.sh
+swapfile
+webserver/core/glue_generator
+webserver/st_optimizer
+webserver/iec2c
 
-# Build directories
-webserver/bin
-webserver/build
-obj/
-utils/dnp3_src/CMakeFiles/
-webserver/scripts/ethercat
-
-# Runtime directories
-.venv
+# Runtime files
+webserver/openplc.db
+webserver/mbconfig.cfg
+webserver/st_files/
+webserver/active_program
