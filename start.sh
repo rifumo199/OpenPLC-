@@ -15,7 +15,7 @@ POSSIBLE_PATHS=(
 
 # Find the first valid script path
 for path in "${POSSIBLE_PATHS[@]}"; do
-    # echo "🔎 Checking for script at: $path" # Uncomment for debugging
+    echo "🔎 Checking for script at: $path"
     if [ -x "$path" ]; then
         TARGET_SCRIPT="$path"
         break
